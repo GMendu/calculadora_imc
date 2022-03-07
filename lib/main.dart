@@ -8,14 +8,15 @@ void main() =>
       ),
     );
 
+enum Genders { masculino, feminino }
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
 
   @override
   _HomeState createState() => _HomeState();
 }
-
 class _HomeState extends State<Home> {
+  Genders? _character = Genders.masculino;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _heightController = TextEditingController();
   final TextEditingController _weightController = TextEditingController();
@@ -91,6 +92,30 @@ class _HomeState extends State<Home> {
             label:"Altura (cm)",
             error: "Insira uma altura!",
             controller: _heightController),
+          ListTile(
+            title: const Text('Masculino'),
+            leading: Radio<Genders>(
+              value: Genders.masculino,
+              groupValue: _character,
+              onChanged: (Genders? value) {
+                setState(() {
+                  _character = value;
+                });
+              },
+            ),
+          ),
+          ListTile(
+            title: const Text('Feminino'),
+            leading: Radio<Genders>(
+              value: Genders.feminino,
+              groupValue: _character,
+              onChanged: (Genders? value) {
+                setState(() {
+                  _character = value;
+                });
+              },
+            ),
+          ),
           buildTextResult(),
           buildCalculateButton(),
         ],
