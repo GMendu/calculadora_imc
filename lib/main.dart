@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
-void main() =>
-    runApp(
+void main() => runApp(
       const MaterialApp(
         home: Home(),
         debugShowCheckedModeBanner: false,
@@ -9,21 +8,24 @@ void main() =>
     );
 
 enum Genders { masculino, feminino }
+
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
+
+
 
   @override
   _HomeState createState() => _HomeState();
 }
+
 class _HomeState extends State<Home> {
   Genders? _character = Genders.masculino;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _heightController = TextEditingController();
   final TextEditingController _weightController = TextEditingController();
-  late String _result;
+  late Text _result;
 
-  @override
-  _Pessoa createState() => _Pessoa();
+  Pessoa p = Pessoa();
 
   @override
   void initState() {
@@ -35,7 +37,9 @@ class _HomeState extends State<Home> {
     _weightController.text = '';
     _heightController.text = '';
     setState(() {
-      _result = 'Informe seus dados';
+      _result = const Text(
+        "Informe seus dados"
+      );
     });
   }
 
@@ -77,9 +81,11 @@ class _HomeState extends State<Home> {
       title: const Text('Calculadora de IMC'),
       backgroundColor: Colors.blue,
       actions: <Widget>[
-        IconButton(icon: const Icon(Icons.refresh), onPressed: () {
-          resetFields();
-        },
+        IconButton(
+          icon: const Icon(Icons.refresh),
+          onPressed: () {
+            resetFields();
+          },
         )
       ],
     );
@@ -135,8 +141,11 @@ class _HomeState extends State<Home> {
       padding: const EdgeInsets.symmetric(vertical: 36.0),
       child: ElevatedButton(
         onPressed: () {
+          p.info(_weightController, _heightController);
           if (_formKey.currentState!.validate()) {
-
+            setState(() {
+              p.verificarImc(_character);
+            });
           }
         },
         child: const Text('CALCULAR', style: TextStyle(color: Colors.white)),
@@ -147,15 +156,13 @@ class _HomeState extends State<Home> {
   Padding buildTextResult() {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 36.0),
-      child: Text(
-        _result,
-        textAlign: TextAlign.center,
-      ),
-    );
+      child: _result);
   }
 
   TextFormField buildTextFormField(
-      {required TextEditingController controller, required String error, required String label}) {
+      {required TextEditingController controller,
+      required String error,
+      required String label}) {
     return TextFormField(
       keyboardType: TextInputType.number,
       decoration: InputDecoration(labelText: label),
@@ -166,67 +173,109 @@ class _HomeState extends State<Home> {
     );
   }
 }
-class _Pessoa extends _HomeState {
 
+class Pessoa {
 //Criar um classe Pessoa com os atributos (peso, altura e gênero), criar métodos
 //para calcular IMC e classificar;
+Pessoa();
+
+  late Text _result;
+  late double altura;
+  late double peso;
+
+  void info(TextEditingController weight, TextEditingController height){
+  altura = double.parse(weight.text);
+  peso = double.parse(weight.text);
+  }
+
+  Text abaixo(var imc) {
+    return Text(
+    "IMC = $imc \nAbaixo do peso",
+    textAlign: TextAlign.center,
+    overflow: TextOverflow.ellipsis,
+    style: TextStyle(fontWeight: FontWeight.bold),
+  );}
+  Text ideal(var imc) {
+    return Text(
+    "IMC = $imc \nPeso ideal",
+    textAlign: TextAlign.center,
+    overflow: TextOverflow.ellipsis,
+    style: TextStyle(fontWeight: FontWeight.bold),
+  );}
+  Text acima(var imc) {
+    return Text(
+    "IMC = $imc \nLevemente acima do peso",
+    textAlign: TextAlign.center,
+    overflow: TextOverflow.ellipsis,
+    style: TextStyle(fontWeight: FontWeight.bold),
+  );}
+  Text grau1(var imc) {
+    return Text(
+    "IMC = $imc \nObesidade Grau I",
+    textAlign: TextAlign.center,
+    overflow: TextOverflow.ellipsis,
+    style: TextStyle(fontWeight: FontWeight.bold),
+  );}
+  Text grau2(var imc) {
+    return Text(
+    "IMC = $imc \nObesidade Grau II",
+    textAlign: TextAlign.center,
+    overflow: TextOverflow.ellipsis,
+    style: TextStyle(fontWeight: FontWeight.bold),
+  );}
+  Text grau3(var imc) {
+    return Text(
+    "IMC = $imc \nObesidade Grau III",
+    textAlign: TextAlign.center,
+    overflow: TextOverflow.ellipsis,
+    style: TextStyle(fontWeight: FontWeight.bold),
+  );}
 
   double calcular() {
-    double weight = double.parse(_weightController.text);
-    double height = double.parse(_heightController.text) / 100;
+    double weight = peso;
+    double height = altura / 100;
     return weight / (height * height);
   }
 
-  String imcFeminino() {
+  Text imcFeminino() {
     var imc = calcular();
-
 
     if (imc < 19.2) {
-      _result += "Abaixo do peso";
+      _result = abaixo(imc);
     } else if (imc < 25.9) {
-      _result += "Peso ideal";
+      _result = ideal(imc);
     } else if (imc < 27.4) {
-      _result += "Levemente acima do peso";
+      _result = acima(imc);
     } else if (imc < 32.4) {
-      _result += "Obesidade Grau I";
+      _result = grau1(imc);
     } else if (imc < 39.9) {
-      _result += "Obesidade Grau II";
+      _result = grau2(imc);
     } else {
-      _result += "Obesidade Grau IV";
+      _result = grau3(imc);
     }
-    _result = "IMC = ${imc.toStringAsPrecision(2)}\n";
     return _result;
   }
 
-
-  String imcMasculino() {
+  Text imcMasculino() {
     var imc = calcular();
 
-
     if (imc < 20.7) {
-      _result += "Abaixo do peso";
+      _result = abaixo(imc);
     } else if (imc < 26.5) {
-      _result += "Peso ideal";
+      _result = abaixo(imc);
     } else if (imc < 27.9) {
-      _result += "Levemente acima do peso";
+      _result = abaixo(imc);
     } else if (imc < 31.2) {
-      _result += "Obesidade Grau I";
+      _result = abaixo(imc);
     } else if (imc < 39.9) {
-      _result += "Obesidade Grau II";
+      _result = abaixo(imc);
     } else {
-      _result += "Obesidade Grau IV";
+      _result = abaixo(imc);
     }
-    _result = "IMC = ${imc.toStringAsPrecision(2)}\n";
     return _result;
   }
 
-  @override
-  void initState() {
-    super.initState();
-    verificarImc(_character);
-  }
-
-  String verificarImc(_character) {
+  Text verificarImc(_character) {
     if (_character == Genders.masculino) {
       return imcMasculino();
     } else {
