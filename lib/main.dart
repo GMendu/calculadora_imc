@@ -23,6 +23,9 @@ class _HomeState extends State<Home> {
   late String _result;
 
   @override
+  _Pessoa createState() => _Pessoa();
+
+  @override
   void initState() {
     super.initState();
     resetFields();
@@ -36,6 +39,8 @@ class _HomeState extends State<Home> {
     });
   }
 
+
+  /* antigo calculo
   void calculateImc() {
     double weight = double.parse(_weightController.text);
     double height = double.parse(_heightController.text) / 100;
@@ -57,7 +62,7 @@ class _HomeState extends State<Home> {
         _result += "Obesidade Grau IV";
       }
     });
-  }
+  }*/
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -66,32 +71,34 @@ class _HomeState extends State<Home> {
         body: SingleChildScrollView(
             padding: const EdgeInsets.all(20.0), child: buildForm()));
   }
-  AppBar buildAppBar(){
+
+  AppBar buildAppBar() {
     return AppBar(
-      title:const Text('Calculadora de IMC'),
+      title: const Text('Calculadora de IMC'),
       backgroundColor: Colors.blue,
       actions: <Widget>[
-        IconButton(icon: const Icon(Icons.refresh),onPressed: () {
+        IconButton(icon: const Icon(Icons.refresh), onPressed: () {
           resetFields();
         },
         )
       ],
     );
   }
-  Form buildForm(){
+
+  Form buildForm() {
     return Form(
       key: _formKey,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
           buildTextFormField(
-            label: "Peso(kg)",
-            error: "Insira seu peso!",
-            controller: _weightController),
+              label: "Peso(kg)",
+              error: "Insira seu peso!",
+              controller: _weightController),
           buildTextFormField(
-            label:"Altura (cm)",
-            error: "Insira uma altura!",
-            controller: _heightController),
+              label: "Altura (cm)",
+              error: "Insira uma altura!",
+              controller: _heightController),
           ListTile(
             title: const Text('Masculino'),
             leading: Radio<Genders>(
@@ -122,38 +129,108 @@ class _HomeState extends State<Home> {
       ),
     );
   }
-Padding buildCalculateButton(){
+
+  Padding buildCalculateButton() {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 36.0),
       child: ElevatedButton(
         onPressed: () {
-        if(_formKey.currentState!.validate()) {
-          calculateImc();
-      }
-    },
-  child: const Text('CALCULAR', style: TextStyle(color: Colors.white)),
-  ),
-  );
-}
-Padding buildTextResult(){
-  return Padding(
-    padding: const EdgeInsets.symmetric(vertical: 36.0),
-    child: Text(
-      _result,
-      textAlign: TextAlign.center,
-    ),
-  );
-}
+          if (_formKey.currentState!.validate()) {
 
-TextFormField buildTextFormField(
-{required TextEditingController controller, required String error, required String label}){
-  return TextFormField(
-    keyboardType: TextInputType.number,
-    decoration: InputDecoration(labelText: label),
-    controller: controller,
-    validator: (text) {
-      return text!.isEmpty ? error: null;
-    },
-  );
+          }
+        },
+        child: const Text('CALCULAR', style: TextStyle(color: Colors.white)),
+      ),
+    );
+  }
+
+  Padding buildTextResult() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 36.0),
+      child: Text(
+        _result,
+        textAlign: TextAlign.center,
+      ),
+    );
+  }
+
+  TextFormField buildTextFormField(
+      {required TextEditingController controller, required String error, required String label}) {
+    return TextFormField(
+      keyboardType: TextInputType.number,
+      decoration: InputDecoration(labelText: label),
+      controller: controller,
+      validator: (text) {
+        return text!.isEmpty ? error : null;
+      },
+    );
+  }
 }
+class _Pessoa extends _HomeState {
+
+//Criar um classe Pessoa com os atributos (peso, altura e gênero), criar métodos
+//para calcular IMC e classificar;
+
+  double calcular() {
+    double weight = double.parse(_weightController.text);
+    double height = double.parse(_heightController.text) / 100;
+    return weight / (height * height);
+  }
+
+  String imcFeminino() {
+    var imc = calcular();
+
+
+    if (imc < 19.2) {
+      _result += "Abaixo do peso";
+    } else if (imc < 25.9) {
+      _result += "Peso ideal";
+    } else if (imc < 27.4) {
+      _result += "Levemente acima do peso";
+    } else if (imc < 32.4) {
+      _result += "Obesidade Grau I";
+    } else if (imc < 39.9) {
+      _result += "Obesidade Grau II";
+    } else {
+      _result += "Obesidade Grau IV";
+    }
+    _result = "IMC = ${imc.toStringAsPrecision(2)}\n";
+    return _result;
+  }
+
+
+  String imcMasculino() {
+    var imc = calcular();
+
+
+    if (imc < 20.7) {
+      _result += "Abaixo do peso";
+    } else if (imc < 26.5) {
+      _result += "Peso ideal";
+    } else if (imc < 27.9) {
+      _result += "Levemente acima do peso";
+    } else if (imc < 31.2) {
+      _result += "Obesidade Grau I";
+    } else if (imc < 39.9) {
+      _result += "Obesidade Grau II";
+    } else {
+      _result += "Obesidade Grau IV";
+    }
+    _result = "IMC = ${imc.toStringAsPrecision(2)}\n";
+    return _result;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    verificarImc(_character);
+  }
+
+  String verificarImc(_character) {
+    if (_character == Genders.masculino) {
+      return imcMasculino();
+    } else {
+      return imcFeminino();
+    }
+  }
 }
