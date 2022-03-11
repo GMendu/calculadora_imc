@@ -38,7 +38,11 @@ class _HomeState extends State<Home> {
     _heightController.text = '';
     setState(() {
       _result = const Text(
-        "Informe seus dados"
+        "Informe seus dados",
+      textAlign: TextAlign.center,
+      overflow: TextOverflow.ellipsis,
+      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0)
+
       );
     });
   }
@@ -141,10 +145,9 @@ class _HomeState extends State<Home> {
       padding: const EdgeInsets.symmetric(vertical: 36.0),
       child: ElevatedButton(
         onPressed: () {
-          p.info(_weightController, _heightController);
           if (_formKey.currentState!.validate()) {
             setState(() {
-              p.verificarImc(_character);
+              _result = p.verificarImc(_character, _weightController, _heightController);
             });
           }
         },
@@ -183,62 +186,64 @@ Pessoa();
   late double altura;
   late double peso;
 
-  void info(TextEditingController weight, TextEditingController height){
-  altura = double.parse(weight.text);
-  peso = double.parse(weight.text);
-  }
-
-  Text abaixo(var imc) {
+  Text abaixo(double imc) {
     return Text(
     "IMC = $imc \nAbaixo do peso",
     textAlign: TextAlign.center,
     overflow: TextOverflow.ellipsis,
-    style: TextStyle(fontWeight: FontWeight.bold),
+    style: const TextStyle(fontWeight: FontWeight.bold, color: Color.fromRGBO(
+        0, 104, 75, 1.0), fontSize: 20.0),
   );}
-  Text ideal(var imc) {
+  Text ideal(double imc) {
     return Text(
     "IMC = $imc \nPeso ideal",
     textAlign: TextAlign.center,
     overflow: TextOverflow.ellipsis,
-    style: TextStyle(fontWeight: FontWeight.bold),
+    style: const TextStyle(fontWeight: FontWeight.bold, color: Color.fromRGBO(
+        19, 106, 12, 1.0), fontSize: 20.0),
   );}
-  Text acima(var imc) {
+  Text acima(double imc) {
     return Text(
     "IMC = $imc \nLevemente acima do peso",
     textAlign: TextAlign.center,
     overflow: TextOverflow.ellipsis,
-    style: TextStyle(fontWeight: FontWeight.bold),
+    style: const TextStyle(fontWeight: FontWeight.bold, color: Color.fromRGBO(
+        151, 125, 25, 1.0), fontSize: 20.0),
   );}
-  Text grau1(var imc) {
+  Text grau1(double imc) {
     return Text(
     "IMC = $imc \nObesidade Grau I",
     textAlign: TextAlign.center,
     overflow: TextOverflow.ellipsis,
-    style: TextStyle(fontWeight: FontWeight.bold),
+    style: const TextStyle(fontWeight: FontWeight.bold, color: Color.fromRGBO(
+        150, 80, 50, 1.0), fontSize: 20.0),
   );}
-  Text grau2(var imc) {
+  Text grau2(double imc) {
     return Text(
     "IMC = $imc \nObesidade Grau II",
     textAlign: TextAlign.center,
     overflow: TextOverflow.ellipsis,
-    style: TextStyle(fontWeight: FontWeight.bold),
+    style: const TextStyle(fontWeight: FontWeight.bold, color: Color.fromRGBO(
+        150, 25, 25, 1.0), fontSize: 20.0),
   );}
-  Text grau3(var imc) {
+  Text grau3(double imc) {
     return Text(
     "IMC = $imc \nObesidade Grau III",
     textAlign: TextAlign.center,
     overflow: TextOverflow.ellipsis,
-    style: TextStyle(fontWeight: FontWeight.bold),
+    style: const TextStyle(fontWeight: FontWeight.bold, color: Color.fromRGBO(
+        100, 0, 0, 1.0), fontSize: 20.0),
   );}
 
-  double calcular() {
-    double weight = peso;
-    double height = altura / 100;
-    return weight / (height * height);
+  double calcular(TextEditingController weight, TextEditingController height) {
+    double peso = double.parse(weight.text);
+    double altura = double.parse(height.text) / 100;
+    double imc = peso / (altura * altura);
+    return imc;
   }
 
-  Text imcFeminino() {
-    var imc = calcular();
+  Text imcFeminino(double imc) {
+
 
     if (imc < 19.2) {
       _result = abaixo(imc);
@@ -256,30 +261,30 @@ Pessoa();
     return _result;
   }
 
-  Text imcMasculino() {
-    var imc = calcular();
+  Text imcMasculino(double imc) {
 
     if (imc < 20.7) {
       _result = abaixo(imc);
     } else if (imc < 26.5) {
-      _result = abaixo(imc);
+      _result = ideal(imc);
     } else if (imc < 27.9) {
-      _result = abaixo(imc);
+      _result = acima(imc);
     } else if (imc < 31.2) {
-      _result = abaixo(imc);
+      _result = grau1(imc);
     } else if (imc < 39.9) {
-      _result = abaixo(imc);
+      _result = grau2(imc);
     } else {
-      _result = abaixo(imc);
+      _result = grau3(imc);
     }
     return _result;
   }
 
-  Text verificarImc(_character) {
+  Text verificarImc(Genders? _character, TextEditingController weight, TextEditingController height) {
+    double imc = calcular(weight, height);
     if (_character == Genders.masculino) {
-      return imcMasculino();
+      return imcMasculino(imc);
     } else {
-      return imcFeminino();
+      return imcFeminino(imc);
     }
   }
 }
